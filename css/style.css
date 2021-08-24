@@ -22,7 +22,7 @@ button.demarrerFour{ background-color: #67B4F8; border-radius: 25px; padding: 10
 .delJaune.active{ color: yellow!important; }
 .delVerte.active{ color: green!important; }
 
-img{ width: 75%; height: auto; margin: auto; display: block; }
+img{ width: 200px; height: auto; margin: auto; display: block; }
 
 @media (max-width: 768px) {
 	body{ flex-direction: column; }
