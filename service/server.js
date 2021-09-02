@@ -1,30 +1,34 @@
 require("dotenv").config();
 
-const express = require('express');
 const mysql = require("mysql");
-const app = express();
+const session = require("express-session");
+const MySQLStore = require('express-mysql-session')(session);
 
-// Listen to the App Engine-specified port, or 8080 otherwise
-const PORT = process.env.APP_PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}...`);
+var pool = mysql.createPool({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: "localhost"
+});
+module.pool = pool;
+
+module.session = session({
+    //store: new MySQLStore({}, pool),
+    secret: '5a359adf700539658ae9b9817fdd0d58',
+    saveUninitialized: true,
+    resave: false,
+    cookie: {secure: false},
+    //name: "api",
+    //expires: new Date(Date.now() + (30 * 86400 * 1000))
 });
 
-const pool = mysql.createPool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  host: "localhost"
-});
+const apiApp = require('./app/api.js');
+const coreApp = require('./app/core.js');
 
-app.get('/:bois', (req, res) => {
-  const query = "SELECT * FROM users WHERE ";
-  pool.query(query, [req.params.bois], (error, results) => {
-    if (error) {
-      res.send(error);
-    } else {
-      res.send(results);
-    }
-    
-  })
-});
+apiApp.listen(process.env.API_PORT, () => {
+    console.log("Démarrage de l'API...");
+});;
+
+coreApp.listen(process.env.CORE_PORT, () => {
+    console.log("Démarrage du serveur...");
+});;
